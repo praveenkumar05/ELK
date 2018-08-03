@@ -1,0 +1,26 @@
+---
+#
+# Installing Metricbeat
+#
+
+# Install Metricbeat 
+- name: get signing key for metricbeat
+  command: rpm --import http://packages.elastic.co/GPG-KEY-elasticsearch
+
+- name: copy repo file
+  copy:
+    src: elasticsearch.repo
+    dest: /etc/yum.repos.d/elasticsearch.repo
+
+- name: Install Metricbeat
+  yum:
+   name: metricbeat 
+   state: present
+   update_cache: yes
+    
+# Starting Metricbeat
+
+- name: Starting Metricbeat
+  service:
+   name: metricbeat
+   state: started

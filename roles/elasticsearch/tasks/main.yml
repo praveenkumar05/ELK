@@ -1,0 +1,31 @@
+#   https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.5.1.rpm
+#- hosts: elasticsearch
+#  become: yes
+
+#  tasks:
+  - name: download elasticsearch
+    get_url:
+      url: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.3.2.rpm
+      dest: /tmp/elasticsearch-6.3.2.rpm
+      validate_certs: no
+  - name : install elasticsearch
+    yum:
+        name: /tmp/elasticsearch-6.3.2.rpm
+        state: present
+  - name: enable elasticsearch to start on boot
+    systemd:
+      name: elasticsearch.service
+      enabled: yes
+  - name: configure elasticsearch
+    template:
+      src: elasticsearch.yml.j2
+      dest: /etc/elasticsearch/elasticsearch.yml
+  - name: configure elasticsearch jvm options
+    template:
+      src: jvm.options.j2
+      dest: /etc/elasticsearch/jvm.options
+  - name: restart elasticsearch
+    service:
+        name: elasticsearch
+        state: restarted
+

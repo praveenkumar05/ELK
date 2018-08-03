@@ -1,0 +1,43 @@
+---
+#
+# Installing Kibana
+#
+
+# Install Kibana 
+- name: get signing key
+  command: rpm --import http://packages.elastic.co/GPG-KEY-elasticsearch
+- name: copy repo file
+  copy:
+        src: kibana.repo
+        dest: /etc/yum.repos.d/kibana.repo
+- name: Install Kibana 
+  yum:
+   name: kibana
+   update_cache: yes
+ 
+# Configurations
+
+- name: Updating the config file to allow outside access
+  lineinfile:
+   destfile: /etc/kibana/kibana.yml
+   regexp: 'server.host:'
+   line: 'server.host: 0.0.0.0'
+
+- name: Defining server port
+  lineinfile:
+   destfile: /etc/kibana/kibana.yml
+   regexp: 'server.port:'
+   line: 'server.port: 5601'
+    
+- name: Defining Elasticsearch URL
+  lineinfile:
+   destfile: /etc/kibana/kibana.yml
+   regexp: 'elasticsearch.url:'
+   line: 'elasticsearch.url: "http://localhost:9200"'
+   
+# Starting Kibana
+
+- name: Starting Kibana
+  service:
+   name: kibana
+   state: started
